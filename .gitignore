@@ -1,0 +1,30 @@
+# Local environments and secrets
+.venv/
+venv/
+.env
+.env.*
+
+# Python and test artefacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest-tmp/
+.coverage
+htmlcov/
+*.log
+tmp/
+
+# Private source statements and generated financial outputs
+data/raw/*
+!data/raw/.gitkeep
+data/private/*
+!data/private/.gitkeep
+*.pdf
+*.csv
+*.xlsx
+*validation*.json
+
+# Notebook state or notebooks explicitly used with private data
+.ipynb_checkpoints/
+notebooks/private/
+notebooks/**/*private*.ipynb
