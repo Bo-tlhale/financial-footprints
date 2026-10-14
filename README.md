@@ -1,6 +1,6 @@
 # Financial Footprints
 
-Financial Footprints is a privacy-conscious personal finance data science project. Its completed first stage converts supported text-based ABSA cheque-account statements into a validated, analysis-ready transaction dataset. Broader household-expenditure research and analytical modelling are planned separately.
+Financial Footprints is a privacy-conscious personal finance data science project. It converts supported text-based ABSA cheque-account statements into validated transactions, then prepares those records for analysis with transparent movement classification. Broader household-expenditure research and analytical modelling are planned separately.
 
 ## Problem statement
 
@@ -25,6 +25,7 @@ Planned work will study personal expenditure patterns and, separately, public So
 | ABSA PDF extraction and financial reconciliation | Completed for two tested consecutive statement periods |
 | Deterministic multi-statement consolidation | Completed |
 | Identical-file skipping and overlap review flags | Completed |
+| Transaction preprocessing and movement classification | Completed |
 | Broader layout and bank support | Planned |
 | Categorisation, analysis, modelling and dashboards | Planned |
 
@@ -42,6 +43,8 @@ The root `statement_extractor.py` is a compatibility wrapper. The implementation
 
 Statements are processed in deterministic filename order by the CLI. Consolidated transactions are ordered chronologically, with statement source order and original row order resolving equal dates. Byte-identical PDFs are skipped. Date-range overlaps and transaction candidates that look identical across different statements are reported for human review and are never silently removed.
 
+The preprocessing package under `src/preprocessing/` validates the extractor schema, standardizes dates and descriptions, classifies financial movement, verifies that source values remain intact, and atomically replaces its output only after all checks pass.
+
 ## Repository structure
 
 ```text
@@ -53,7 +56,7 @@ financial-footprints/
 |   `-- synthetic/    # safe synthetic fixtures
 |-- src/
 |   |-- extraction/   # implemented statement pipeline
-|   |-- preprocessing/
+|   |-- preprocessing/ # cleaning, validation and movement classification
 |   |-- categorisation/
 |   |-- analysis/
 |   `-- modelling/
@@ -94,6 +97,37 @@ transaction_id,transaction_date,effective_date,transaction_type,description,debi
 
 `data/private/validation.json` records per-statement reconciliation, identical files skipped, overlapping periods and potential cross-statement duplicate candidates. An all-zero supplementary effective date is stored as missing; it never replaces the valid posting date.
 
+## Transaction preprocessing
+
+Preprocessing converts the reconciled extractor output into an analysis-ready dataset without changing the underlying financial records.
+
+Run from the repository root:
+
+```powershell
+python -m src.preprocessing.pipeline --input "data/private/transactions.csv" --output "data/private/preprocessed_transactions.csv"
+```
+
+The pipeline validates the exact extractor schema, transaction IDs, ISO dates, two-decimal monetary fields, source references and duplicate IDs. It preserves the original columns and appends:
+
+```text
+cleaned_description,movement_type,movement_classification_method,movement_review_required
+```
+
+`cleaned_description` normalizes casing, whitespace and control characters while leaving `description` unchanged. `movement_type` describes financial movement rather than spending category.
+
+### Movement rules
+
+The classifier uses deterministic rules in this order:
+
+1. Validated bank transaction types identify purchases, transfers, refunds, cash withdrawals, fees, reversals and informational entries.
+2. Narrow description rules identify explicit salary, payroll, pension, refund or reversal wording.
+3. Financial-field rules identify otherwise unmapped fee-only or zero-movement rows and flag them for review.
+4. Unsupported or directionally inconsistent records become `Unknown` and require review.
+
+An incoming credit is not automatically treated as income, and a debit is not automatically treated as a purchase. Debit orders remain `Unknown` until a reliable movement rule is established. Merchant identification and expense categorisation are intentionally deferred.
+
+The output is `data/private/preprocessed_transactions.csv`. It is ignored by Git and can be opened directly in VS Code or Excel. A failed run does not overwrite a previously validated output.
+
 ## Testing
 
 ```powershell
@@ -111,15 +145,14 @@ $env:FINANCIAL_FOOTPRINTS_PRIVATE_TEST_PDF="data/raw/your-statement.pdf"
 
 Real statements, private CSVs, validation reports, environment files, caches and private notebooks are excluded by `.gitignore`. Extracted descriptions are partially redacted, but exports must still be treated as private. Before publishing, also inspect Git history: adding an ignore rule does not remove a file that was previously committed.
 
-This directory currently has no Git metadata available, so tracked-file and history checks cannot be performed here.
+The repository is hosted at [Bo-tlhale/financial-footprints](https://github.com/Bo-tlhale/financial-footprints). Private PDFs and generated CSV/JSON files are not tracked.
 
 ## Development roadmap
 
 1. Validate additional months and ABSA layout variants with manual sampling.
 2. Add synthetic PDF fixtures covering more layout changes.
-3. Design preprocessing and data-quality contracts.
-4. Develop transaction categorisation with an auditable labelled dataset.
-5. Add exploratory and statistical analysis using private and public datasets separately.
-6. Evaluate modelling and visualisation only after data quality is established.
+3. Develop merchant normalization and transaction categorisation with an auditable labelled dataset.
+4. Add exploratory and statistical analysis using private and public datasets separately.
+5. Evaluate modelling and visualisation only after data quality is established.
 
 See [docs/PROCESS.md](docs/PROCESS.md) for the chronological engineering record and current limitations.

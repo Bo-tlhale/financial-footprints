@@ -108,7 +108,7 @@
 
 **Outcome:** Extraction is isolated as a package while command-line compatibility is preserved.
 
-**Remaining limitations:** The current workspace is not a Git repository, so previously tracked sensitive files and Git history cannot be audited. Atomic replacement protects against validation and staging failures; replacing two separate destination files cannot be a single filesystem transaction.
+**Remaining limitations:** At that stage the workspace had not yet been initialized as a Git repository, so tracked sensitive files and history could not be audited. Atomic replacement protects against validation and staging failures; replacing two separate destination files cannot be a single filesystem transaction.
 
 ## Next development step
 
@@ -120,7 +120,7 @@ Validate additional statement months and layout variants with manual stratified 
 
 **Implementation:** Updated project-facing names in documentation and package descriptions while preserving the established extractor command and file layout. Renamed the private regression-test environment variable and retained the previous variable as a compatibility fallback.
 
-**Challenge:** The target GitHub repository does not yet exist, and the GitHub CLI is not installed locally.
+**Challenge:** At the start of this stage, the target GitHub repository did not yet exist and the GitHub CLI was not installed locally.
 
 **Decision:** Prepare and audit the local repository first. Do not create a commit or publish files until the milestone review is approved.
 
@@ -128,4 +128,38 @@ Validate additional statement months and layout variants with manual stratified 
 
 **Outcome:** The local project is stable under the Financial Footprints identity and ready for milestone review.
 
-**Remaining limitations:** Remote repository creation and the first push remain separate actions after approval.
+**Remaining limitations:** This was resolved after milestone approval: the repository was created and the initial commit was pushed to `Bo-tlhale/financial-footprints`.
+
+## Checkpoint 2: Transaction preprocessing and movement classification
+
+**Objective:** Transform the reconciled extractor CSV into a clean, validated dataset with transparent financial-movement labels while preserving every source record.
+
+**Problem identified:** The extractor output is financially reconciled but still needs standardized analytical fields. A debit cannot safely be treated as spending, and a credit cannot safely be treated as income.
+
+**Initial data assessment:** The verified source schema contains 11 columns. Charges are stored in `fee`, not `debit`. Missing effective dates are empty strings. Informational entries remain as zero-movement rows. The private integration source contained 150 unique transaction IDs, 63 missing effective dates, no missing descriptions and four zero-movement records.
+
+**Approach selected:** Add separate cleaning, validation, classification and pipeline modules. Preserve source columns, append four preprocessing fields and fail before output replacement when a critical validation check fails.
+
+**Implementation:**
+
+- Standardized posting and effective dates to ISO 8601.
+- Converted `00/00/0000` effective-date placeholders to missing values without weakening posting-date validation.
+- Added a lower-case, whitespace-normalized `cleaned_description` while preserving `description`.
+- Validated exact source schema, IDs, two-decimal monetary strings, page references and duplicate IDs.
+- Added deterministic movement types, classification methods and boolean review flags.
+- Added atomic CSV output at `data/private/preprocessed_transactions.csv`.
+- Added concise aggregate console reporting without transaction descriptions or amounts.
+
+**Architectural decisions:** Bank transaction type is the primary evidence. Narrow description rules apply only to explicit income, refund or reversal wording. Direction alone never establishes spending or income. Unknown and inconsistent records remain represented and require review. The pipeline does not perform merchant identification or expense categorisation.
+
+**Challenges encountered:** The first automated run exposed a synthetic fixture writer that rejected the intentionally omitted schema column before the pipeline could validate it. The fixture was corrected without weakening pipeline checks. The first module CLI run also exposed an eager package import that caused a `runpy` warning; removing the import made module execution clean.
+
+**Solutions and refinements:** Review flags are stored as booleans and serialized as `True` or `False`. Direct bank-type rules require the expected debit, credit or fee direction. Debit orders remain `Unknown` because their analytical meaning cannot be inferred safely from the current data.
+
+**Testing methodology:** Synthetic tests cover dates, missing effective dates, description cleaning, money preservation, schemas, invalid numeric values, duplicate IDs, empty inputs, all supported movement types, ambiguous records, deterministic output, record ordering, financial invariants and safe failure. The complete Checkpoint 1 extraction suite runs alongside these tests.
+
+**Validation results:** The full automated suite passed with 47 tests and one optional private regression skipped. Private integration preserved all 150 records, IDs, descriptions, source references and financial fields. Two ambiguous debit-order records were classified as `Unknown` and flagged for review. Repeated runs produced identical output hashes.
+
+**Remaining limitations:** Rules cover the transaction types observed in the two verified statements plus explicitly tested description terms. New bank labels and ambiguous descriptions require review. Movement classification is not merchant normalization or expense categorisation.
+
+**Final checkpoint outcome:** Checkpoint 2 meets the preprocessing, classification, determinism, integrity, privacy and safe-output acceptance criteria and is ready for review before commit.
