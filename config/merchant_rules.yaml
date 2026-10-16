@@ -1,0 +1,157 @@
+version: 1
+rules:
+  - id: uber_eats
+    pattern: '(?:^|\s)(?:dl\*\s*)?uber\s+eats(?:\s|$)'
+    match_type: regex
+    merchant: Uber Eats
+    category: Food & Dining
+    subcategory: Food Delivery
+    confidence: high
+    priority: 200
+    explanation: Specific food-delivery brand; evaluated before Uber rides.
+
+  - id: uber_rides
+    pattern: '(?:^|\s)(?:uber\s*(?:bv|trip|sa)?)(?:\s|$)'
+    match_type: regex
+    merchant: Uber
+    category: Transport
+    subcategory: Ride-Hailing
+    confidence: high
+    priority: 100
+
+  - id: mr_d_food
+    pattern: '(?:^|\s)mr\s+d\s+food(?:\s|$)'
+    match_type: regex
+    merchant: Mr D Food
+    category: Food & Dining
+    subcategory: Food Delivery
+    confidence: high
+    priority: 180
+
+  - id: pick_n_pay
+    pattern: '(?:^|\s)(?:pnp|pick\s+n\s+pay)(?:\s|$)'
+    match_type: regex
+    merchant: Pick n Pay
+    category: Groceries
+    subcategory: Supermarkets
+    confidence: medium
+    priority: 120
+    review_required: true
+    explanation: Supermarket is likely, but the retailer also sells non-grocery goods.
+
+  - id: checkers_sixty60
+    pattern: '(?:^|\s)checkers\s+(?:sixty60|60)(?:\s|$)'
+    match_type: regex
+    merchant: Checkers Sixty60
+    category: Groceries
+    subcategory: Supermarkets
+    confidence: medium
+    priority: 180
+    review_required: true
+
+  - id: checkers
+    pattern: '(?:^|\s)checkers(?:\s|$)'
+    match_type: regex
+    merchant: Checkers
+    category: Groceries
+    subcategory: Supermarkets
+    confidence: medium
+    priority: 100
+    review_required: true
+
+  - id: gautrain
+    pattern: '(?:^|\s)gautrain(?:\s+e\s*commerce)?(?:\s|$)'
+    match_type: regex
+    merchant: Gautrain
+    category: Transport
+    subcategory: Public Transport
+    confidence: high
+    priority: 150
+
+  - id: youtube_premium
+    pattern: '(?:^|\s)(?:google\s*\*?\s*)?youtube\s*premium(?:\s|$)'
+    match_type: regex
+    merchant: YouTube Premium
+    category: Subscriptions
+    subcategory: Streaming
+    confidence: high
+    priority: 170
+
+  - id: netflix
+    pattern: '(?:^|\s)netflix(?:\.com)?(?:\s|$)'
+    match_type: regex
+    merchant: Netflix
+    category: Subscriptions
+    subcategory: Streaming
+    confidence: high
+    priority: 150
+
+  - id: spotify
+    pattern: '(?:^|\s)spotify(?:\s|$)'
+    match_type: regex
+    merchant: Spotify
+    category: Subscriptions
+    subcategory: Streaming
+    confidence: high
+    priority: 150
+
+  - id: ster_kinekor
+    pattern: '(?:^|\s)ster[\s-]+kinekor(?:\s|$)'
+    match_type: regex
+    merchant: Ster-Kinekor
+    category: Entertainment
+    subcategory: Cinema
+    confidence: high
+    priority: 150
+
+  - id: mediclinic
+    pattern: '(?:^|\s)mediclinic(?:\s|$)'
+    match_type: regex
+    merchant: Mediclinic
+    category: Healthcare
+    subcategory: Medical Services
+    confidence: high
+    priority: 150
+
+  - id: dis_chem
+    pattern: '(?:^|\s)dis[\s-]*chem(?:\s|$)'
+    match_type: regex
+    merchant: Dis-Chem
+    category: null
+    subcategory: null
+    confidence: low
+    priority: 120
+    review_required: true
+    explanation: Pharmacy retailer also sells groceries, cosmetics and general goods.
+
+  - id: clicks
+    pattern: '(?:^|\s)clicks(?:\s|$)'
+    match_type: regex
+    merchant: Clicks
+    category: null
+    subcategory: null
+    confidence: low
+    priority: 120
+    review_required: true
+
+  - id: woolworths
+    pattern: '(?:^|\s)(?:woolworths|woolies)(?:\s|$)'
+    match_type: regex
+    merchant: Woolworths
+    category: null
+    subcategory: null
+    confidence: low
+    priority: 110
+    review_required: true
+    explanation: Merchant identity does not distinguish food, clothing or homeware.
+
+  - id: fuel_station
+    pattern: '(?:^|\s)(?:engen|shell|bp)(?:\s|$)'
+    match_type: regex
+    merchant: Fuel Station
+    category: Transport
+    subcategory: Fuel
+    confidence: medium
+    priority: 80
+    review_required: true
+    explanation: Fuel stations may also represent convenience-store purchases.

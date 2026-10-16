@@ -163,3 +163,33 @@ Validate additional statement months and layout variants with manual stratified 
 **Remaining limitations:** Rules cover the transaction types observed in the two verified statements plus explicitly tested description terms. New bank labels and ambiguous descriptions require review. Movement classification is not merchant normalization or expense categorisation.
 
 **Final checkpoint outcome:** Checkpoint 2 meets the preprocessing, classification, determinism, integrity, privacy and safe-output acceptance criteria and is ready for review before commit.
+
+## Checkpoint 3: Merchant identification and transaction categorisation
+
+**Objective:** Enrich the validated preprocessing output with deterministic merchant identities and conservative expense categories while preserving every financial record and separating spend from other movement types.
+
+**Dependency and repository assessment:** Checkpoint 2 was present in Git as commit `01cac2d` on `main`, matched `origin/main`, and the working tree was clean. Its private output contained 150 rows with the exact 15-column preprocessing schema, no missing cleaned descriptions and two `Unknown` movements. The extractor, preprocessing modules, tests, README, process log and ignore rules were reviewed before implementation.
+
+**Problems identified:** Merchant descriptions contain aliases, processor prefixes and overlapping brand names. Merchant identity alone cannot prove what was purchased at supermarkets, pharmacies, department stores or fuel stations. Non-expense movements must not become spending merely because a description resembles a merchant. Two generated outputs also need safe replacement, and an existing human-edited review file must not be silently destroyed.
+
+**Methodology:** Rule-based classification was selected before supervised machine learning because no sufficiently large, corrected and representative labelled dataset exists yet. Explicit rules are deterministic, inspectable and testable, and they expose uncertainty rather than turning plausible guesses into training labels.
+
+**Configuration design:** `config/categories.yaml` defines a validated category/subcategory hierarchy. `config/merchant_rules.yaml` contains generic public-brand rules with IDs, exact or regular-expression patterns, normalized merchant names, optional category pairs, confidence, priority, review flags and explanations. Rules are ordered by descending priority and specificity, then rule ID. Repeated matching patterns are rejected; equally ranked overlapping matches with different outcomes are treated as ambiguous and flagged.
+
+**Implementation:** Added separate configuration validation, merchant normalization, transaction classification and CLI pipeline modules under `src/categorisation/`. Output appends merchant, category, subcategory, method, confidence, review and spending-status fields. A compact review CSV retains transaction ID, date, original description, movement, suggestions and audit metadata. All source fields are compared with the preprocessed rows before output is accepted.
+
+**Movement and ambiguity decisions:** Purchases and bank fees are currently expense-applicable. Bank fees and airtime use narrow transaction rules. Income, incoming and outgoing transfers, refunds, cash withdrawals, reversals and informational entries use `movement_exclusion` and receive no expense category. Unknown movements and unmatched purchases use `Uncategorised / Needs Review`. A broad known retailer may receive a merchant identity but no category. Medium-confidence supermarket and fuel-station defaults remain reviewable because actual basket contents are unknown.
+
+**Output safety:** Both CSVs are fully staged after configuration, input and output validation. Existing destinations are backed up while the pair is replaced and restored on a replacement failure. A differing existing classification review is preserved unless `--overwrite-review` is explicitly supplied after inspection. No correction import or persistence was added.
+
+**Challenges encountered:** PyYAML was not installed in the existing environment, so it was declared and installed before validation. The first test run exposed a synthetic ambiguity regex that did not match its intended string and a nested pytest temporary path whose parent did not exist. The managed Windows default pytest temp root was also inaccessible, so final tests used an explicit ignored workspace-local temp path. These test-environment issues were corrected without relaxing production validation.
+
+**Automated testing:** Added 39 synthetic categorisation tests covering exact matches, aliases, case-insensitive and processor-prefixed matches, Uber/Uber Eats overlap, unknown and broad merchants, configuration conflicts, supported categories, all non-expense movement types, bank-fee and airtime rules, integrity, deterministic outputs, review schemas, paired-output rollback, changed-review protection, invalid schemas and configuration, missing input and CLI integration. The full suite passed with 86 tests and one optional private regression skipped.
+
+**Private output validation:** The CLI processed 150 records, identified 40 merchants, assigned 53 supported non-placeholder categories, flagged 64 records and excluded 42 non-expense movements. Source and output counts were both 150, all transaction IDs remained unique, and all 15 preprocessed fields—including amounts, balances, dates, descriptions and source references—were unchanged. The categorised and review outputs each contained 150 rows. Repeated runs produced identical hashes for both files.
+
+**Privacy verification:** Real descriptions and amounts were not printed during validation. Generated CSVs remain under ignored `data/private/`; global CSV/PDF rules remain active; private YAML mapping patterns are now ignored. Only generic public merchant-brand rules and synthetic tests are candidates for Git.
+
+**Known limitations:** Public rule coverage is intentionally modest, so many purchases remain uncategorised pending review. Merchant rules cannot establish basket contents, cash-withdrawal usage or the original category of a refund. Confidence labels describe rule strength rather than statistical probabilities. Manual corrections, correction reapplication and learning from reviewed labels belong to Checkpoint 4.
+
+**Final checkpoint outcome:** Checkpoint 3 produces validated, deterministic categorised and review datasets without changing source financial records. It is ready for the mandatory review checkpoint before any commit or push.

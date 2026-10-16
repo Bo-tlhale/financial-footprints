@@ -9,6 +9,8 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .pytest-tmp/
+.checkpoint*-test-tmp/
+.checkpoint*-validation-tmp/
 .coverage
 htmlcov/
 *.log
@@ -19,6 +21,8 @@ data/raw/*
 !data/raw/.gitkeep
 data/private/*
 !data/private/.gitkeep
+config/private*.yaml
+config/**/*private*.yaml
 *.pdf
 *.csv
 *.xlsx

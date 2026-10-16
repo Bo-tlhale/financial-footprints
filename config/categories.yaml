@@ -1,0 +1,50 @@
+version: 1
+categories:
+  - name: Food & Dining
+    subcategories:
+      - Restaurants
+      - Fast Food
+      - Food Delivery
+  - name: Groceries
+    subcategories:
+      - Supermarkets
+      - Convenience Stores
+  - name: Transport
+    subcategories:
+      - Ride-Hailing
+      - Public Transport
+      - Fuel
+  - name: Shopping
+    subcategories:
+      - Clothing
+      - Electronics
+      - General Retail
+  - name: Healthcare
+    subcategories:
+      - Pharmacy
+      - Medical Services
+  - name: Entertainment
+    subcategories:
+      - Cinema
+      - Events
+      - Leisure
+  - name: Subscriptions
+    subcategories:
+      - Streaming
+      - Software
+      - Memberships
+  - name: Utilities & Communication
+    subcategories:
+      - Airtime
+      - Mobile Data
+      - Electricity
+  - name: Financial Charges
+    subcategories:
+      - Bank Fees
+      - Transaction Fees
+  - name: Other Expenses
+    subcategories:
+      - Miscellaneous
+  - name: Uncategorised
+    subcategories:
+      - Needs Review

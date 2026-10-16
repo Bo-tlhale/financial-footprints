@@ -1,6 +1,6 @@
 # Financial Footprints
 
-Financial Footprints is a privacy-conscious personal finance data science project. It converts supported text-based ABSA cheque-account statements into validated transactions, then prepares those records for analysis with transparent movement classification. Broader household-expenditure research and analytical modelling are planned separately.
+Financial Footprints is a privacy-conscious personal finance data science project. It converts supported text-based ABSA cheque-account statements into validated transactions, prepares those records with transparent movement classification, and applies auditable merchant and spending-category rules. Broader household-expenditure research and analytical modelling are planned separately.
 
 ## Problem statement
 
@@ -16,7 +16,7 @@ Manual transcription of bank-statement PDFs is slow, difficult to reproduce and 
 
 ## Research direction
 
-Planned work will study personal expenditure patterns and, separately, public South African household-expenditure datasets. Transaction categorisation, exploratory analysis, statistical analysis, modelling and dashboards are not implemented yet.
+Planned work will study personal expenditure patterns and, separately, public South African household-expenditure datasets. Exploratory analysis, statistical analysis, modelling and dashboards are not implemented yet.
 
 ## Status
 
@@ -26,14 +26,16 @@ Planned work will study personal expenditure patterns and, separately, public So
 | Deterministic multi-statement consolidation | Completed |
 | Identical-file skipping and overlap review flags | Completed |
 | Transaction preprocessing and movement classification | Completed |
+| Merchant identification and transaction categorisation | Completed |
 | Broader layout and bank support | Planned |
-| Categorisation, analysis, modelling and dashboards | Planned |
+| Analysis, modelling and dashboards | Planned |
 
 ## Technology stack
 
 - Python 3.10+
 - PyMuPDF for positioned PDF text extraction
 - `Decimal` for monetary calculations
+- PyYAML for validated, editable category and merchant rules
 - pytest for automated testing
 - CSV and JSON outputs for portability and auditability
 
@@ -44,6 +46,8 @@ The root `statement_extractor.py` is a compatibility wrapper. The implementation
 Statements are processed in deterministic filename order by the CLI. Consolidated transactions are ordered chronologically, with statement source order and original row order resolving equal dates. Byte-identical PDFs are skipped. Date-range overlaps and transaction candidates that look identical across different statements are reported for human review and are never silently removed.
 
 The preprocessing package under `src/preprocessing/` validates the extractor schema, standardizes dates and descriptions, classifies financial movement, verifies that source values remain intact, and atomically replaces its output only after all checks pass.
+
+The categorisation package under `src/categorisation/` validates YAML configuration, identifies merchants from cleaned descriptions, categorises eligible expenditure, excludes non-spending movements, preserves all source fields and stages both output CSVs before replacement.
 
 ## Repository structure
 
@@ -57,7 +61,7 @@ financial-footprints/
 |-- src/
 |   |-- extraction/   # implemented statement pipeline
 |   |-- preprocessing/ # cleaning, validation and movement classification
-|   |-- categorisation/
+|   |-- categorisation/ # merchant identification and expense categories
 |   |-- analysis/
 |   `-- modelling/
 |-- notebooks/
@@ -124,9 +128,47 @@ The classifier uses deterministic rules in this order:
 3. Financial-field rules identify otherwise unmapped fee-only or zero-movement rows and flag them for review.
 4. Unsupported or directionally inconsistent records become `Unknown` and require review.
 
-An incoming credit is not automatically treated as income, and a debit is not automatically treated as a purchase. Debit orders remain `Unknown` until a reliable movement rule is established. Merchant identification and expense categorisation are intentionally deferred.
+An incoming credit is not automatically treated as income, and a debit is not automatically treated as a purchase. Debit orders remain `Unknown` until a reliable movement rule is established. Merchant identification and expense categorisation remain separate concerns handled by the next pipeline stage.
 
 The output is `data/private/preprocessed_transactions.csv`. It is ignored by Git and can be opened directly in VS Code or Excel. A failed run does not overwrite a previously validated output.
+
+## Merchant identification and categorisation
+
+Run the categorisation pipeline from the repository root after preprocessing:
+
+```powershell
+python -m src.categorisation.pipeline --input "data/private/preprocessed_transactions.csv" --output "data/private/categorised_transactions.csv" --review "data/private/classification_review.csv"
+```
+
+The validated hierarchy is defined in `config/categories.yaml`; public merchant aliases and carefully bounded regular expressions live in `config/merchant_rules.yaml`. Rules are ordered deterministically by priority, specificity and rule ID. Identical patterns are rejected as duplicates or conflicts, while equally ranked overlapping matches with different outcomes are left unclassified and flagged for review.
+
+The categorised dataset preserves all 15 preprocessing fields and appends:
+
+```text
+clean_merchant,category,subcategory,classification_method,classification_confidence,category_review_required,spending_classification_status
+```
+
+Classification methods are `merchant_rule`, `transaction_rule`, `movement_exclusion` and `unclassified`. Confidence is an interpretable rule label (`high`, `medium`, `low` or `unknown`), not a statistical probability.
+
+### Category hierarchy
+
+- Food & Dining: Restaurants, Fast Food, Food Delivery
+- Groceries: Supermarkets, Convenience Stores
+- Transport: Ride-Hailing, Public Transport, Fuel
+- Shopping: Clothing, Electronics, General Retail
+- Healthcare: Pharmacy, Medical Services
+- Entertainment: Cinema, Events, Leisure
+- Subscriptions: Streaming, Software, Memberships
+- Utilities & Communication: Airtime, Mobile Data, Electricity
+- Financial Charges: Bank Fees, Transaction Fees
+- Other Expenses: Miscellaneous
+- Uncategorised: Needs Review
+
+Only `Purchase` and `Bank Fee` movements are eligible for current spending categorisation. Income, transfers, refunds, cash withdrawals, reversals and informational records receive `not_applicable`; they retain their movement type and are not counted as new expenditure. Unknown movements require review. A known merchant does not guarantee a known purchase category: broad retailers can receive a merchant name with a blank category and a review flag.
+
+`data/private/classification_review.csv` contains all records in source order with compact, human-readable suggestions and transaction traceability. It is intended for inspection only in this checkpoint. Persistent corrections and review imports are deliberately deferred. A differing existing review file is not overwritten unless it has been inspected and the command is rerun with `--overwrite-review`.
+
+Both generated CSVs are ignored by Git. Configuration under `config/` must contain only generic public merchant rules; private counterparties or mappings belong in ignored private configuration.
 
 ## Testing
 
@@ -141,9 +183,11 @@ $env:FINANCIAL_FOOTPRINTS_PRIVATE_TEST_PDF="data/raw/your-statement.pdf"
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
+The suite covers extraction, preprocessing, configuration validation, merchant aliases and overlaps, category decisions, movement exclusions, review output, deterministic processing, paired output safety and financial-record preservation.
+
 ## Privacy
 
-Real statements, private CSVs, validation reports, environment files, caches and private notebooks are excluded by `.gitignore`. Extracted descriptions are partially redacted, but exports must still be treated as private. Before publishing, also inspect Git history: adding an ignore rule does not remove a file that was previously committed.
+Real statements, private CSVs, private merchant mappings, validation reports, environment files, caches and private notebooks are excluded by `.gitignore`. Extracted descriptions are partially redacted, but exports must still be treated as private. Before publishing, also inspect Git history: adding an ignore rule does not remove a file that was previously committed.
 
 The repository is hosted at [Bo-tlhale/financial-footprints](https://github.com/Bo-tlhale/financial-footprints). Private PDFs and generated CSV/JSON files are not tracked.
 
@@ -151,8 +195,10 @@ The repository is hosted at [Bo-tlhale/financial-footprints](https://github.com/
 
 1. Validate additional months and ABSA layout variants with manual sampling.
 2. Add synthetic PDF fixtures covering more layout changes.
-3. Develop merchant normalization and transaction categorisation with an auditable labelled dataset.
+3. Review classification suggestions and implement persistent manual corrections.
 4. Add exploratory and statistical analysis using private and public datasets separately.
 5. Evaluate modelling and visualisation only after data quality is established.
+
+Current merchant coverage is intentionally limited to generic, validated public-brand patterns. Unrecognised merchants and ambiguous multi-category retailers remain visible for review. Rules do not infer basket contents, link refunds to earlier purchases, classify cash spending after withdrawal, or learn from corrections yet.
 
 See [docs/PROCESS.md](docs/PROCESS.md) for the chronological engineering record and current limitations.
