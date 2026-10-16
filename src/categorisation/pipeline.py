@@ -18,6 +18,12 @@ from .category_validator import (
     validate_output_records,
 )
 from .transaction_classifier import classify_transaction
+from .review_manager import (
+    build_review_decision_fields,
+    load_correction_store,
+    record_fingerprint,
+    spreadsheet_safe,
+)
 
 DEFAULT_CATEGORIES = Path('config/categories.yaml')
 DEFAULT_RULES = Path('config/merchant_rules.yaml')
@@ -44,19 +50,36 @@ def categorise_records(records, rules):
     return output
 
 
-def build_review_records(records):
-    return [{
-        'transaction_id': record['transaction_id'],
-        'transaction_date': record['transaction_date'],
-        'original_description': record['description'],
-        'clean_merchant': record['clean_merchant'],
-        'movement_type': record['movement_type'],
-        'suggested_category': record['category'],
-        'suggested_subcategory': record['subcategory'],
-        'classification_method': record['classification_method'],
-        'classification_confidence': record['classification_confidence'],
-        'review_required': record['category_review_required'],
-    } for record in records]
+def build_review_records(records, corrections=None):
+    corrections = corrections or {}
+    review = []
+    for record in records:
+        correction = corrections.get(record['transaction_id'])
+        if (
+            correction is not None
+            and correction['record_fingerprint'] != record_fingerprint(record)
+        ):
+            raise CategoryValidationError(
+                'saved correction fingerprint does not match transaction '
+                f'{record["transaction_id"]}'
+            )
+        row = {
+            'transaction_id': record['transaction_id'],
+            'transaction_date': record['transaction_date'],
+            'original_description': spreadsheet_safe(record['description']),
+            'clean_merchant': spreadsheet_safe(record['clean_merchant']),
+            'movement_type': record['movement_type'],
+            'suggested_category': record['category'],
+            'suggested_subcategory': record['subcategory'],
+            'classification_method': record['classification_method'],
+            'classification_confidence': record['classification_confidence'],
+            'review_required': record['category_review_required'],
+        }
+        row.update(build_review_decision_fields(
+            correction, record,
+        ))
+        review.append(row)
+    return review
 
 
 def _stage_csv(path, fieldnames, records):
@@ -122,19 +145,29 @@ def _replace_pair(staged_pairs):
 def categorise_csv(
         input_path, output_path, review_path,
         categories_path=DEFAULT_CATEGORIES, rules_path=DEFAULT_RULES,
-        allow_changed_review=False):
+        allow_changed_review=False, corrections_path=None):
     input_path = Path(input_path)
     output_path = Path(output_path)
     review_path = Path(review_path)
     resolved = [path.resolve() for path in (input_path, output_path, review_path)]
     if len(set(resolved)) != 3:
         raise CategoryValidationError('input, output and review paths must be different')
+    if (
+        corrections_path is not None
+        and Path(corrections_path).resolve() in resolved
+    ):
+        raise CategoryValidationError(
+            'correction store must differ from input, output and review paths'
+        )
     hierarchy = load_category_hierarchy(categories_path)
     rules = load_merchant_rules(rules_path, hierarchy)
     source = load_source(input_path)
     categorised = categorise_records(source, rules)
     summary = validate_output_records(source, categorised, hierarchy)
-    review = build_review_records(categorised)
+    corrections = {}
+    if corrections_path is not None and Path(corrections_path).exists():
+        corrections = load_correction_store(corrections_path, hierarchy)
+    review = build_review_records(categorised, corrections)
     staged_output = _stage_csv(output_path, OUTPUT_COLUMNS, categorised)
     staged_review = None
     try:
@@ -176,6 +209,11 @@ def main(argv=None):
     parser.add_argument('--categories', type=Path, default=DEFAULT_CATEGORIES)
     parser.add_argument('--rules', type=Path, default=DEFAULT_RULES)
     parser.add_argument(
+        '--corrections', type=Path,
+        default=Path('data/private/classification_corrections.csv'),
+        help='private correction store used to retain imported decisions',
+    )
+    parser.add_argument(
         '--overwrite-review', action='store_true',
         help='replace a differing existing review file after manual inspection',
     )
@@ -184,6 +222,7 @@ def main(argv=None):
         summary = categorise_csv(
             args.input, args.output, args.review,
             args.categories, args.rules, args.overwrite_review,
+            args.corrections,
         )
     except (OSError, CategoryValidationError, ValueError) as exc:
         parser.exit(1, f'error: {exc}\n')

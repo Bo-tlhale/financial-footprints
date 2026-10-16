@@ -40,6 +40,12 @@ REVIEW_COLUMNS = [
     'classification_method',
     'classification_confidence',
     'review_required',
+    'reviewed_merchant',
+    'reviewed_category',
+    'reviewed_subcategory',
+    'review_status',
+    'review_notes',
+    'decision_version',
 ]
 CLASSIFICATION_METHODS = {
     'merchant_rule', 'transaction_rule', 'movement_exclusion', 'unclassified',

@@ -27,6 +27,7 @@ Planned work will study personal expenditure patterns and, separately, public So
 | Identical-file skipping and overlap review flags | Completed |
 | Transaction preprocessing and movement classification | Completed |
 | Merchant identification and transaction categorisation | Completed |
+| Manual classification review and curated dataset generation | Completed |
 | Broader layout and bank support | Planned |
 | Analysis, modelling and dashboards | Planned |
 
@@ -47,7 +48,7 @@ Statements are processed in deterministic filename order by the CLI. Consolidate
 
 The preprocessing package under `src/preprocessing/` validates the extractor schema, standardizes dates and descriptions, classifies financial movement, verifies that source values remain intact, and atomically replaces its output only after all checks pass.
 
-The categorisation package under `src/categorisation/` validates YAML configuration, identifies merchants from cleaned descriptions, categorises eligible expenditure, excludes non-spending movements, preserves all source fields and stages both output CSVs before replacement.
+The categorisation package under `src/categorisation/` validates YAML configuration, identifies merchants from cleaned descriptions, categorises eligible expenditure, imports transaction-level human decisions and produces a curated analytical dataset. Automatic suggestions, manual decisions and final values remain separate and auditable.
 
 ## Repository structure
 
@@ -166,9 +167,67 @@ Classification methods are `merchant_rule`, `transaction_rule`, `movement_exclus
 
 Only `Purchase` and `Bank Fee` movements are eligible for current spending categorisation. Income, transfers, refunds, cash withdrawals, reversals and informational records receive `not_applicable`; they retain their movement type and are not counted as new expenditure. Unknown movements require review. A known merchant does not guarantee a known purchase category: broad retailers can receive a merchant name with a blank category and a review flag.
 
-`data/private/classification_review.csv` contains all records in source order with compact, human-readable suggestions and transaction traceability. It is intended for inspection only in this checkpoint. Persistent corrections and review imports are deliberately deferred. A differing existing review file is not overwritten unless it has been inspected and the command is rerun with `--overwrite-review`.
+`data/private/classification_review.csv` contains all records in source order with human-readable suggestions and editable review fields. A differing existing review file is never overwritten unless it has been inspected and the command is rerun with `--overwrite-review`. Imported decisions are first saved separately, so a safe refresh can repopulate them instead of discarding them.
 
 Both generated CSVs are ignored by Git. Configuration under `config/` must contain only generic public merchant rules; private counterparties or mappings belong in ignored private configuration.
+
+## Manual classification review
+
+The review workflow is CSV-based and works in VS Code's CSV viewer or Excel. The review file uses this column order:
+
+```text
+transaction_id,transaction_date,original_description,clean_merchant,movement_type,suggested_category,suggested_subcategory,classification_method,classification_confidence,review_required,reviewed_merchant,reviewed_category,reviewed_subcategory,review_status,review_notes,decision_version
+```
+
+The generated columns through `review_required` are evidence and must not be edited. `clean_merchant` is the automatic merchant suggestion. Edit only the three `reviewed_*` fields, `review_status` and `review_notes`; keep `decision_version` unchanged.
+
+Review statuses mean:
+
+- `pending`: not reviewed; correction fields must remain blank and no decision is saved.
+- `approved`: the automatic merchant and category are confirmed; correction fields may remain blank.
+- `corrected`: one or more reviewed values replace the corresponding suggestion. A blank reviewed value falls back to the valid suggestion instead of erasing it.
+- `deferred`: classification is intentionally unresolved; correction fields must remain blank.
+
+For example, a fictional automatic `Shopping / General Retail` result can be changed to `Groceries / Supermarkets` by entering those values under `reviewed_category` and `reviewed_subcategory`, setting `review_status` to `corrected`, and optionally adding a note. CSV quoting and UTF-8 are supported. Generated descriptions that begin with spreadsheet formula characters are escaped for safe viewing.
+
+Import the edited review file:
+
+```powershell
+python -m src.categorisation.review_manager --review "data/private/classification_review.csv" --source "data/private/categorised_transactions.csv" --corrections "data/private/classification_corrections.csv"
+```
+
+The importer validates the generated snapshot, transaction IDs, duplicate rows, status, category hierarchy, movement exclusions and decision version before replacing the private correction store. It saves only `approved`, `corrected` and `deferred` decisions. Reimporting the same review is idempotent; reviewing a subset does not discard other saved decisions. A stale edit cannot replace a newer decision unless the conflict is deliberately resolved with `--replace-existing` after inspection. If an automatic rule later changes a previously approved suggestion, the refreshed review returns that row to `pending` with a warning while retaining the saved decision until the user reviews the change.
+
+Transaction IDs are based on the statement byte hash and original row index. They remain stable when statements are renamed, reordered or joined by additional statements. Each correction also stores a fingerprint of immutable transaction fields, excluding the source filename. This tolerates renames while preventing identical-looking transactions from receiving one another's decisions. Re-extracted content that changes identity or a correction whose transaction has disappeared is rejected rather than matched approximately.
+
+Generate the curated analytical dataset:
+
+```powershell
+python -m src.categorisation.curated_pipeline --input "data/private/categorised_transactions.csv" --corrections "data/private/classification_corrections.csv" --output "data/private/curated_transactions.csv"
+```
+
+The curated output preserves every preprocessing field and adds automatic merchant/category values, final merchant/category values, `classification_source`, `review_status` and `review_required`. Classification sources are `automatic`, `manual_approval`, `manual_correction`, `unclassified` and `deferred`. The original extracted, preprocessed and automatically categorised CSVs are not modified.
+
+### End-to-end and refresh workflow
+
+Run these steps after extracting and preprocessing statements:
+
+```powershell
+# A. Generate automatic classifications and a review CSV.
+python -m src.categorisation.pipeline --input "data/private/preprocessed_transactions.csv" --output "data/private/categorised_transactions.csv" --review "data/private/classification_review.csv" --corrections "data/private/classification_corrections.csv"
+
+# B. Edit classification_review.csv in VS Code or Excel.
+
+# C. Validate and persist the reviewed decisions.
+python -m src.categorisation.review_manager --review "data/private/classification_review.csv" --source "data/private/categorised_transactions.csv" --corrections "data/private/classification_corrections.csv"
+
+# D. Produce the downstream analytical dataset.
+python -m src.categorisation.curated_pipeline --input "data/private/categorised_transactions.csv" --corrections "data/private/classification_corrections.csv" --output "data/private/curated_transactions.csv"
+```
+
+When new statements are added, rerun extraction and preprocessing, then rerun categorisation. If the existing review differs, first confirm its decisions were imported; then use `--overwrite-review`. The regenerated review is seeded from the correction store, while new transactions remain `pending`. Import again after reviewing new rows, then regenerate the curated dataset.
+
+Category corrections cannot change financial movement type. Income, transfers, refunds, cash withdrawals, reversals and informational entries cannot receive ordinary spending categories. If movement classification itself appears wrong, leave the transaction deferred for a separate preprocessing review rather than changing `movement_type` in the review CSV.
 
 ## Testing
 
@@ -183,11 +242,11 @@ $env:FINANCIAL_FOOTPRINTS_PRIVATE_TEST_PDF="data/raw/your-statement.pdf"
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The suite covers extraction, preprocessing, configuration validation, merchant aliases and overlaps, category decisions, movement exclusions, review output, deterministic processing, paired output safety and financial-record preservation.
+The suite covers extraction, preprocessing, configuration validation, merchant aliases and overlaps, category decisions, movement exclusions, editable reviews, persistent corrections, stale and conflicting decisions, curated outputs, deterministic processing, staged-write safety and financial-record preservation.
 
 ## Privacy
 
-Real statements, private CSVs, private merchant mappings, validation reports, environment files, caches and private notebooks are excluded by `.gitignore`. Extracted descriptions are partially redacted, but exports must still be treated as private. Before publishing, also inspect Git history: adding an ignore rule does not remove a file that was previously committed.
+Real statements, extracted and curated CSVs, review files, correction stores, private merchant mappings, validation reports, environment files, caches and private notebooks are excluded by `.gitignore`. Extracted descriptions are partially redacted, but exports and review notes must still be treated as private. Do not copy private corrections into public merchant rules. Before publishing, also inspect Git history: adding an ignore rule does not remove a file that was previously committed.
 
 The repository is hosted at [Bo-tlhale/financial-footprints](https://github.com/Bo-tlhale/financial-footprints). Private PDFs and generated CSV/JSON files are not tracked.
 
@@ -195,10 +254,10 @@ The repository is hosted at [Bo-tlhale/financial-footprints](https://github.com/
 
 1. Validate additional months and ABSA layout variants with manual sampling.
 2. Add synthetic PDF fixtures covering more layout changes.
-3. Review classification suggestions and implement persistent manual corrections.
+3. Extend review coverage as additional statement months are introduced.
 4. Add exploratory and statistical analysis using private and public datasets separately.
 5. Evaluate modelling and visualisation only after data quality is established.
 
-Current merchant coverage is intentionally limited to generic, validated public-brand patterns. Unrecognised merchants and ambiguous multi-category retailers remain visible for review. Rules do not infer basket contents, link refunds to earlier purchases, classify cash spending after withdrawal, or learn from corrections yet.
+Current merchant coverage is intentionally limited to generic, validated public-brand patterns. Unrecognised merchants and ambiguous multi-category retailers remain visible for review. Decisions are transaction-specific: they do not create global merchant rules, infer basket contents, link refunds to earlier purchases, classify cash spending after withdrawal, correct movement types or learn automatically.
 
 See [docs/PROCESS.md](docs/PROCESS.md) for the chronological engineering record and current limitations.
