@@ -1,6 +1,6 @@
 # Financial Footprints
 
-Financial Footprints is a privacy-conscious personal finance data science project. It converts supported text-based ABSA cheque-account statements into validated transactions, prepares those records with transparent movement classification, and applies auditable merchant and spending-category rules. Broader household-expenditure research and analytical modelling are planned separately.
+Financial Footprints is a privacy-conscious personal finance data science project. It converts supported text-based ABSA cheque-account statements into validated transactions, prepares those records with transparent movement classification, and applies auditable merchant and spending-category rules. It also includes a separate reproducible preparation path for the public Stats SA IES 2022/23 household-expenditure microdata.
 
 ## Problem statement
 
@@ -28,6 +28,7 @@ Planned work will study personal expenditure patterns and, separately, public So
 | Transaction preprocessing and movement classification | Completed |
 | Merchant identification and transaction categorisation | Completed |
 | Manual classification review and curated dataset generation | Completed |
+| Stats SA IES 2022/23 public-data integration | Completed against all five official Stata files |
 | Broader layout and bank support | Planned |
 | Analysis, modelling and dashboards | Planned |
 
@@ -50,6 +51,8 @@ The preprocessing package under `src/preprocessing/` validates the extractor sch
 
 The categorisation package under `src/categorisation/` validates YAML configuration, identifies merchants from cleaned descriptions, categorises eligible expenditure, imports transaction-level human decisions and produces a curated analytical dataset. Automatic suggestions, manual decisions and final values remain separate and auditable.
 
+The public-data package under `src/public_data/` discovers all five official IES files, reads Stata data in bounded chunks where needed, validates household/person relationships, restores fixed-width COICOP codes, joins geography at the correct cardinality, creates separate household and person tables, applies a conservative comparison crosswalk and emits a provenance/quality report.
+
 ## Repository structure
 
 ```text
@@ -57,12 +60,15 @@ financial-footprints/
 |-- data/
 |   |-- raw/          # ignored private statement PDFs
 |   |-- private/      # ignored generated transactions and reports
-|   |-- public/       # future public datasets
+|   |-- public/
+|   |   |-- raw/      # ignored official sources, organized by dataset
+|   |   `-- processed/ # ignored validated analytical tables and report
 |   `-- synthetic/    # safe synthetic fixtures
 |-- src/
 |   |-- extraction/   # implemented statement pipeline
 |   |-- preprocessing/ # cleaning, validation and movement classification
 |   |-- categorisation/ # merchant identification and expense categories
+|   |-- public_data/  # IES acquisition, validation and preparation
 |   |-- analysis/
 |   `-- modelling/
 |-- notebooks/
@@ -74,6 +80,43 @@ financial-footprints/
 |-- requirements.txt
 `-- README.md
 ```
+
+## Public expenditure preparation
+
+The source is Statistics South Africa's *Income and Expenditure Survey 2022/23*, DataFirst reference `zaf-statssa-ies-2022-2023-v1.2` and DOI `10.25828/z52z-re15`. The manually downloaded Stata files were hash-pinned after retrieval. Geography, households, person and total are version 1.2; PersonIncome is version 1.1. Metadata and the official COICOP workbook are stored separately from the data.
+
+The DataFirst catalog labels the dataset CC BY 4.0 and requests citation plus notification of resulting publications. Those terms and any access conditions still apply to local users. This repository does not redistribute the microdata or reference binaries; it tracks only URLs, checksums, code and documentation.
+
+Acquire the public reference files:
+
+```powershell
+python -m src.public_data.acquisition --destination "data/public/raw"
+```
+
+After the authorized DataFirst download, preserve the official filenames under this structure:
+
+```text
+data/public/raw/
+|-- geography/ies-2022-2023-geography-v1.2.dta
+|-- households/ies-2022-2023-households-v1.2.dta
+|-- person/ies-2022-2023-person-v1.2.dta
+|-- personincome/ies-2022-2023-personincome-v1.1.dta
+|-- total/ies-2022-2023-total-v1.2.dta
+|-- classifications/IES2023_COICOP.xlsx
+`-- documentation/IES2023Metadata.pdf
+```
+
+Run the complete integration:
+
+```powershell
+python -m src.public_data.pipeline --input "data/public/raw" --output "data/public/processed"
+```
+
+The command produces `ies_2022_2023_expenditure.csv`, `ies_2022_2023_households.csv`, `ies_2022_2023_persons.csv`, `ies_2022_2023_person_income.csv` and `ies_2022_2023_quality_report.json`. It validates all keys and joins, preserves blank and zero amounts distinctly, and reports rather than deletes repeated expenditure-unit or person-income observations. Published codebook omissions and type conflicts are retained and flagged instead of silently relabelled. Raw data, processed outputs and reports remain ignored by Git.
+
+The verified real-data counts are 1,128,279 total records, 19,940 households, 70,339 persons and 48,038 PersonIncome records. The household and geography keys have complete one-to-one coverage; all person and PersonIncome identifiers match their parent records. There are 4,652 single-person households. These remain survey households and are not automatically equivalent to the owner of the personal bank account.
+
+No IES category is asserted to be directly equivalent to personal spending. Mapped scopes are marked `adjustment_required`; mixed, non-consumption and unsupported scopes are `not_comparable`. See [the data dictionary](docs/DATA_DICTIONARY.md) and [comparison methodology](docs/COMPARISON_METHODOLOGY.md) before using either amount field.
 
 ## Installation
 
@@ -242,7 +285,7 @@ $env:FINANCIAL_FOOTPRINTS_PRIVATE_TEST_PDF="data/raw/your-statement.pdf"
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The suite covers extraction, preprocessing, configuration validation, merchant aliases and overlaps, category decisions, movement exclusions, editable reviews, persistent corrections, stale and conflicting decisions, curated outputs, deterministic processing, staged-write safety and financial-record preservation.
+The suite covers extraction, preprocessing, configuration validation, merchant aliases and overlaps, category decisions, movement exclusions, editable reviews, persistent corrections, stale and conflicting decisions, curated outputs, Stata survey discovery and ingestion, public-data acquisition and mapping, deterministic processing, staged-write safety and financial-record preservation. Synthetic fixtures cover failure paths; the complete official data has also been processed locally.
 
 ## Privacy
 

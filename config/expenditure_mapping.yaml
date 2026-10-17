@@ -1,0 +1,99 @@
+version: 1
+source_classification: "Stats SA IES 2022/23 COICOP"
+default:
+  category: null
+  subcategory: null
+  comparability: not_comparable
+  rationale: "No defensible personal transaction category has been defined."
+rules:
+  - id: food_at_home
+    field: division
+    prefix: "01"
+    category: Groceries
+    subcategory: Supermarkets
+    comparability: adjustment_required
+    rationale: "Household food acquisitions approximate groceries, but include non-retail sources and household rather than individual consumption."
+  - id: clothing
+    field: division
+    prefix: "03"
+    category: Shopping
+    subcategory: Clothing
+    comparability: adjustment_required
+    rationale: "Household clothing and footwear are broader than card purchases and use a different unit of analysis."
+  - id: household_energy
+    field: group
+    prefix: "045"
+    category: Utilities & Communication
+    subcategory: Electricity
+    comparability: adjustment_required
+    rationale: "The group includes electricity, gas and other fuels; only its electricity component directly matches the personal category."
+  - id: health
+    field: division
+    prefix: "06"
+    category: Healthcare
+    subcategory: Medical Services
+    comparability: adjustment_required
+    rationale: "Household health expenditure combines products and services and may include reimbursements or pooled household costs."
+  - id: transport
+    field: division
+    prefix: "07"
+    category: Transport
+    subcategory: Public Transport
+    comparability: adjustment_required
+    rationale: "The division includes vehicle purchases, operation and passenger services and is broader than the personal transaction category."
+  - id: communication_equipment
+    field: group
+    prefix: "081"
+    category: Shopping
+    subcategory: Electronics
+    comparability: adjustment_required
+    rationale: "Communication equipment is durable-goods expenditure rather than a communication service."
+  - id: software
+    field: group
+    prefix: "082"
+    category: Subscriptions
+    subcategory: Software
+    comparability: adjustment_required
+    rationale: "The survey group records software expenditure, not necessarily recurring subscriptions."
+  - id: communication_services
+    field: group
+    prefix: "083"
+    category: Utilities & Communication
+    subcategory: Mobile Data
+    comparability: adjustment_required
+    rationale: "The group includes multiple information and communication services, not only mobile data."
+  - id: recreation_and_culture
+    field: division
+    prefix: "09"
+    category: Entertainment
+    subcategory: Leisure
+    comparability: adjustment_required
+    rationale: "The division includes durable goods, pets, books and holidays as well as entertainment services."
+  - id: restaurants
+    field: group
+    prefix: "111"
+    category: Food & Dining
+    subcategory: Restaurants
+    comparability: adjustment_required
+    rationale: "Food-serving services align conceptually, but survey values are annual household estimates rather than individual bank transactions."
+  - id: financial_services
+    field: group
+    prefix: "122"
+    category: Financial Charges
+    subcategory: Bank Fees
+    comparability: adjustment_required
+    rationale: "Financial services are broader than bank and transaction fees."
+  - id: personal_goods
+    field: group
+    prefix: "131"
+    category: Shopping
+    subcategory: General Retail
+    comparability: adjustment_required
+    rationale: "Personal-care goods and services are combined and do not identify a merchant channel."
+  - id: personal_effects
+    field: group
+    prefix: "132"
+    category: Shopping
+    subcategory: General Retail
+    comparability: adjustment_required
+    rationale: "Other personal effects are a mixed household-goods group."

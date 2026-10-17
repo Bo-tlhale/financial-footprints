@@ -21,12 +21,22 @@ data/raw/*
 !data/raw/.gitkeep
 data/private/*
 !data/private/.gitkeep
+data/public/raw/*
+!data/public/raw/.gitkeep
+!data/public/raw/*/
+data/public/raw/*/*
+!data/public/raw/*/.gitkeep
+data/public/processed/*
+!data/public/processed/.gitkeep
+data/synthetic/*
+!data/synthetic/.gitkeep
 config/private*.yaml
 config/**/*private*.yaml
 *.pdf
 *.csv
 *.xlsx
 *validation*.json
+.checkpoint5-research/
 
 # Notebook state or notebooks explicitly used with private data
 .ipynb_checkpoints/

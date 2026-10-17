@@ -1,0 +1,39 @@
+version: 1
+dataset:
+  title: "South Africa - Income and Expenditure Survey 2022-2023"
+  producer: "Statistics South Africa"
+  catalog_version: "1.2"
+  doi: "https://doi.org/10.25828/z52z-re15"
+  catalog_url: "https://datafirst.uct.ac.za/dataportal/index.php/catalog/1116"
+  official_landing_page: "https://isibaloweb.statssa.gov.za/pages/surveys/pss/ies/2023/ies2023.php"
+  license: "CC BY 4.0"
+  catalog_last_modified: "2026-07-09"
+  reference_files_retrieved: "2026-10-17"
+public_reference_files:
+  metadata:
+    url: "https://microdata.worldbank.org/catalog/8219/download/356743"
+    filename: "documentation/IES2023Metadata.pdf"
+    sha256: "d9350ba191df836fac0666745700cc636e0f4a665a3220bb1df4c6e34dee0776"
+  coicop_codebook:
+    url: "https://microdata.worldbank.org/catalog/8219/download/356745"
+    filename: "classifications/IES2023_COICOP.xlsx"
+    sha256: "85a1ed65aac8dbde8b2f29fd6fff2c770d61b5988755747d07299f17dc2add73"
+restricted_microdata:
+  access: "Free registration and acceptance of DataFirst access conditions are required."
+  required_files:
+    total:
+      path: "total/ies-2022-2023-total-v1.2.dta"
+      sha256: "631088a26efe801e70b6f07aa55d2b2ef0c2e952467465ebef5f92b83a7dea65"
+    geography:
+      path: "geography/ies-2022-2023-geography-v1.2.dta"
+      sha256: "155123039067e61fb73a163af19b142e92ad575b310bc914d4573d0f215d74ca"
+  catalog_files:
+    households:
+      path: "households/ies-2022-2023-households-v1.2.dta"
+      sha256: "111fed5c66f77a552dea31bcb66b94214e4442d6eed1c7b2630c152221fad900"
+    persons:
+      path: "person/ies-2022-2023-person-v1.2.dta"
+      sha256: "e7a8c6f9892e95da828d6b31e316ca653b14d6a5b75a703cba26e3d7aa1be45d"
+    person_income:
+      path: "personincome/ies-2022-2023-personincome-v1.1.dta"
+      sha256: "54dcb794b233d4128b86bbd06b413bd6f47a6b24e84f000139b6102af7e84127"
