@@ -191,6 +191,12 @@ def statement_summary(path):
     result = {}
     for field, label in labels.items():
         matches = [index for index, value in enumerate(lines) if value == label]
+        if field == 'withdrawals' and not matches:
+            # ABSA omits this summary row when the statement has no cash,
+            # cheque or ATM withdrawals. Reconciliation still rejects a
+            # non-zero extracted withdrawal total against this zero.
+            result[field] = Decimal('0.00')
+            continue
         if len(matches) != 1 or matches[0] + 1 >= len(lines):
             raise ValueError(
                 f'{path.name}: missing or duplicated account-summary field: {field}'
@@ -205,15 +211,24 @@ def statement_summary(path):
 def _cancelled_cashsend_pairs(rows):
     cancelled_debits = set()
     cancellation_credits = set()
+    cancellation_types = {
+        'can cashsend mb': 'cashsend mobile',
+        'can cashsend ib': 'cashsend digital',
+    }
     for credit_index, credit_row in enumerate(rows):
-        if (credit_row['transaction_type'].lower() != 'can cashsend mb'
-                or credit_row['credit'] <= 0):
+        credit_type = credit_row['transaction_type'].lower()
+        debit_type = cancellation_types.get(credit_type)
+        if debit_type is None or credit_row['credit'] <= 0:
             continue
         for debit_index in range(credit_index - 1, -1, -1):
             debit_row = rows[debit_index]
+            elapsed_days = (
+                datetime.fromisoformat(credit_row['transaction_date'])
+                - datetime.fromisoformat(debit_row['transaction_date'])
+            ).days
             if (debit_index not in cancelled_debits
-                    and debit_row['transaction_type'].lower() == 'cashsend mobile'
-                    and debit_row['transaction_date'] == credit_row['transaction_date']
+                    and debit_row['transaction_type'].lower() == debit_type
+                    and 0 <= elapsed_days <= 1
                     and debit_row['debit'] == credit_row['credit']):
                 cancelled_debits.add(debit_index)
                 cancellation_credits.add(credit_index)

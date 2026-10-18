@@ -14,7 +14,7 @@ OUTGOING_TRANSFER_TYPES = {
 REFUND_TYPES = {'pos o/sea refund'}
 CASH_WITHDRAWAL_TYPES = {'atm withdrawal', 'sas atm withdrawal'}
 BANK_FEE_TYPES = {'transaction fee'}
-REVERSAL_TYPES = {'can cashsend mb'}
+REVERSAL_TYPES = {'can cashsend mb', 'can cashsend ib'}
 INFORMATIONAL_TYPES = {'notific fee sms'}
 
 INCOME_DESCRIPTION = re.compile(r'\b(salary|payroll|wages?|pension)\b', re.I)

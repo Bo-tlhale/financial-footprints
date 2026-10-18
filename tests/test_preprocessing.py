@@ -102,6 +102,8 @@ def test_preprocessing_preserves_original_financial_fields():
          'Outgoing Transfer', 'bank_transaction_type', False),
         ('Can Cashsend Mb', 'Cancelled transfer', '0.00', '10.00', '0.00',
          'Reversal', 'bank_transaction_type', False),
+        ('Can Cashsend Ib', 'Cancelled transfer', '0.00', '10.00', '0.00',
+         'Reversal', 'bank_transaction_type', False),
         ('Notific Fee Sms', 'Notification', '0.00', '0.00', '0.00',
          'Informational', 'bank_transaction_type', False),
         ('Unmapped Type', 'No reliable evidence', '10.00', '0.00', '0.00',

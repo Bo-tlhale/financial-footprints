@@ -2,3 +2,4 @@ pymupdf>=1.23,<2
 PyYAML>=6,<7
 pytest>=8,<10
 pandas>=2.3,<4
+matplotlib>=3.10,<4

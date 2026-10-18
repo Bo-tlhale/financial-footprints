@@ -11,6 +11,7 @@ __pycache__/
 .pytest-tmp/
 .checkpoint*-test-tmp/
 .checkpoint*-validation-tmp/
+.matplotlib-cache/
 .coverage
 htmlcov/
 *.log
@@ -37,6 +38,10 @@ config/**/*private*.yaml
 *.xlsx
 *validation*.json
 .checkpoint5-research/
+
+# Generated EDA outputs
+reports/private/
+!reports/public/*.csv
 
 # Notebook state or notebooks explicitly used with private data
 .ipynb_checkpoints/

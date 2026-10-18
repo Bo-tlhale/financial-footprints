@@ -1,0 +1,60 @@
+{
+  "comparison_readiness": {
+    "composition_comparison_supported_now": false,
+    "nominal_amount_comparison_supported": false,
+    "reason": "personal review coverage is incomplete and the 2026 account period is not price-aligned with May 2023 household expenditure"
+  },
+  "dataset": "Stats SA Income and Expenditure Survey 2022/23",
+  "estimand": "annual household ordinary consumption where coicop_type == 1, May 2023 price basis",
+  "gauteng": {
+    "sample_households": 4688,
+    "single_person_sample_households": 1304
+  },
+  "income_expenditure_association": {
+    "interpretation": "descriptive association only; no causal or inferential claim",
+    "measure": "survey-weighted Pearson correlation of log household income and log ordinary expenditure",
+    "value": 0.7406172683340914
+  },
+  "limitations": [
+    "Weighted estimates use household weights but do not include design-based variance estimates.",
+    "Provincial and subgroup results are descriptive and not causal.",
+    "Per-capita household values are not interpreted as observed individual expenditure.",
+    "PersonIncome is not aggregated into household income; the published household INCOME field is used."
+  ],
+  "mapped_scope_weighted_share": 0.5498041473719177,
+  "readiness_checks": {
+    "all_expenditure_records": 1128279,
+    "ordinary_consumption_records": 956234,
+    "source_weighted_field_not_used_for_means": true
+  },
+  "sample_statistics": {
+    "mean_annual_expenditure": 119114.33643863756,
+    "median_annual_expenditure": 76265.97172927856,
+    "p90_annual_expenditure": 243501.8532276155,
+    "standard_deviation_annual_expenditure": 141135.12073515845
+  },
+  "single_person_households": {
+    "estimated_households": 5578090.345109999,
+    "sample_count": 4652,
+    "weighted_mean_annual_expenditure": 94951.74537711735,
+    "weighted_median_annual_expenditure": 57930.26651287079
+  },
+  "verified_counts": {
+    "expenditure_records": 1128279,
+    "households": 19940,
+    "person_income_observations": 48038,
+    "persons": 70339,
+    "single_person_households": 4652
+  },
+  "weighted_population_statistics": {
+    "estimated_households": 21282823.755799998,
+    "mean_annual_expenditure": 138852.09257013616,
+    "median_annual_expenditure": 81557.92758178711,
+    "p90_annual_expenditure": 306042.65840148926
+  },
+  "weighting": {
+    "confidence_intervals": "not reported",
+    "method": "aggregate unweighted item values to households, then apply HHOLD_WGT",
+    "variance_estimation": "not performed because no supported design-variable variance procedure is implemented"
+  }
+}

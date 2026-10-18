@@ -5,6 +5,7 @@ import csv
 import os
 import shutil
 import tempfile
+import time
 from pathlib import Path
 
 from .category_validator import (
@@ -109,6 +110,18 @@ def _review_can_be_replaced(review_path, staged_review, allow_changed_review):
         )
 
 
+def _replace_with_retry(source, destination, attempts=5):
+    """Tolerate brief Windows scanner locks without weakening rollback."""
+    for attempt in range(attempts):
+        try:
+            os.replace(source, destination)
+            return
+        except PermissionError:
+            if attempt == attempts - 1:
+                raise
+            time.sleep(0.05 * (attempt + 1))
+
+
 def _replace_pair(staged_pairs):
     backups = []
     replaced = []
@@ -125,12 +138,12 @@ def _replace_pair(staged_pairs):
                 shutil.copy2(destination, backup)
             backups.append((destination, backup))
         for staged, destination in staged_pairs:
-            os.replace(staged, destination)
+            _replace_with_retry(staged, destination)
             replaced.append(destination)
     except Exception:
         for destination, backup in reversed(backups):
             if backup is not None and backup.exists():
-                os.replace(backup, destination)
+                _replace_with_retry(backup, destination)
             elif destination in replaced:
                 destination.unlink(missing_ok=True)
         raise

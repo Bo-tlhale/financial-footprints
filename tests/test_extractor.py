@@ -154,6 +154,20 @@ def test_reconciliation_excludes_cancelled_cashsend_pair_from_summary():
     assert result['cancelled_cashsend_pairs'] == 1
 
 
+def test_reconciliation_excludes_next_day_internet_cashsend_cancellation():
+    rows = [
+        transaction('2026-01-01', 'Bal Brought Forward', '200.00'),
+        transaction('2026-01-02', 'Cashsend Digital', '100.00', debit='100.00'),
+        transaction('2026-01-03', 'Can Cashsend Ib', '200.00', credit='100.00'),
+        transaction('2026-01-03', 'Purchase', '180.00', debit='20.00'),
+    ]
+    expected = summary_for(
+        rows, credits=Decimal('0'), sundry_debits=Decimal('20.00'))
+    result = reconcile(rows, expected)
+    assert not result['issues']
+    assert result['cancelled_cashsend_pairs'] == 1
+
+
 def test_statement_summary_from_synthetic_pdf(tmp_path):
     pdf = tmp_path / 'synthetic.pdf'
     document = pymupdf.open()
@@ -171,6 +185,20 @@ def test_statement_summary_from_synthetic_pdf(tmp_path):
         'withdrawals': Decimal('0.00'), 'sundry_debits': Decimal('15.00'),
         'charges': Decimal('5.00'), 'closing': Decimal('100.00'),
     }
+
+
+def test_statement_summary_treats_omitted_withdrawals_as_zero(tmp_path):
+    pdf = tmp_path / 'synthetic-no-withdrawals.pdf'
+    document = pymupdf.open()
+    page = document.new_page()
+    page.insert_text((72, 72), '\n'.join([
+        'Account Summary:', 'Balance Brought Forward', '100,00',
+        'Sundry Credits', '20,00', 'Sundry Debits', '15,00',
+        'Charges', '5,00', 'Balance', '100,00', 'Your transactions',
+    ]))
+    document.save(pdf)
+    document.close()
+    assert statement_summary(pdf)['withdrawals'] == Decimal('0.00')
 
 
 def test_no_csv_created_on_invalid_pdf(tmp_path):
