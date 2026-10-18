@@ -255,4 +255,5 @@ def analyse_public(expenditure_path, households_path, quality_report_path) -> di
         'metrics': metrics, 'households': analytical, 'category': category,
         'composition': composition, 'single_category': single_category,
         'province': province, 'income': income,
+        'division_household': division_household[['uqno', 'division', 'division_description', 'ordinary_expenditure']],
     }

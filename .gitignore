@@ -42,6 +42,10 @@ config/**/*private*.yaml
 # Generated EDA outputs
 reports/private/
 !reports/public/*.csv
+!reports/public/statistics/
+!reports/public/statistics/*.csv
+!reports/public/statistics_model/
+!reports/public/statistics_model/*.csv
 
 # Notebook state or notebooks explicitly used with private data
 .ipynb_checkpoints/

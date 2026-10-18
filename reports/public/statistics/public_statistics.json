@@ -1,0 +1,64 @@
+{
+  "distribution": {
+    "p10": 30820.690231323242,
+    "p25": 48133.250267505646,
+    "p50": 81557.92758178711,
+    "p75": 157167.39308166504,
+    "p90": 306042.65840148926,
+    "p95": 463361.84217071533,
+    "p99": 863972.7790374756,
+    "sample_count": 19940,
+    "top_10_percent_expenditure_share": 0.39241877309571377,
+    "top_20_percent_expenditure_share": 0.5636936356554528,
+    "weighted_gini": 0.505618801930712,
+    "weighted_iqr": 109034.1428141594,
+    "weighted_mean": 138852.09257013616,
+    "weighted_median": 81557.92758178711,
+    "weighted_population": 21282823.755799998,
+    "weighted_standard_deviation": 171384.8869127724,
+    "weighted_total_expenditure": 2955164614294.2344
+  },
+  "estimand": "annual household ordinary consumption (coicop_type == 1), May 2023 prices",
+  "income_expenditure_association": {
+    "expenditure_income_ratio": {
+      "p10": 0.3495460818346435,
+      "p25": 0.5498790623925252,
+      "p50": 0.8860680378421265,
+      "p75": 1.4187230856445558,
+      "p90": 2.2804204520861586,
+      "p95": 3.0558720815529985,
+      "p99": 6.766164692920936,
+      "sample_count": 19940,
+      "weighted_iqr": 0.8688440232520307,
+      "weighted_mean": 1.3350559170311003,
+      "weighted_median": 0.8860680378421265,
+      "weighted_population": 21282823.755799998,
+      "weighted_standard_deviation": 6.509776816894811
+    },
+    "interpretation": "weighted descriptive association; no causal or significance claim",
+    "weighted_pearson_log_income_log_expenditure": 0.7406172683340914,
+    "weighted_spearman_income_expenditure": 0.7070953747760774
+  },
+  "limitations": [
+    "Consumption inequality is not income inequality.",
+    "Per-capita values are calculated household measures and do not model economies of scale.",
+    "Released v1.2 weights differ from the total printed in the metadata; released weights are used without renormalisation."
+  ],
+  "survey_design": {
+    "household_weight": "HHOLD_WGT",
+    "primary_sampling_unit_available": false,
+    "replicate_weights_available": false,
+    "strata_available": false,
+    "variance_estimation": "unsupported from released analytical files; no confidence intervals, p-values, or inferential standard errors reported"
+  },
+  "validation": {
+    "aggregation": "ordinary expenditure items summed to UQNO before HHOLD_WGT is applied",
+    "metadata_reported_weight_sum": 19050732.016,
+    "missing_expenditure_households": 0,
+    "positive_weights": true,
+    "released_weight_sum": 21282823.755799998,
+    "sample_households": 19940,
+    "weight_sum_discrepancy": 2232091.7397999987,
+    "zero_expenditure_households": 0
+  }
+}

@@ -1,0 +1,118 @@
+province_name,division,division_description,sample_households,weighted_expenditure,weighted_share
+Eastern Cape,1,Food and non-alcoholic beverages,2752,47439311408.37252,0.21170229474792682
+Eastern Cape,2,"Alcoholic beverages, tobacco and narcotics",914,3359772747.65818,0.014993295210125086
+Eastern Cape,3,Clothing and footwear,2038,11945369620.587265,0.05330731170444813
+Eastern Cape,4,"Housing, water, electricity, gas and other fuels",2752,68234123939.040855,0.3045010601789628
+Eastern Cape,5,"Furnishings, household equipment and maintenance",2299,9559170611.632988,0.042658678937158565
+Eastern Cape,6,Health,1437,1830348725.4887838,0.008168099701938995
+Eastern Cape,7,Transport,2529,33725819096.0042,0.15050457274591547
+Eastern Cape,8,Information and communication,2541,8877919062.653748,0.03961853117915314
+Eastern Cape,9,"Recreation, sport and culture",1573,3206210210.5003643,0.014308008250038945
+Eastern Cape,10,Education services,422,3019342963.846329,0.013474095957566164
+Eastern Cape,11,Restaurants and accommodation services,938,4063651315.004537,0.01813441812079212
+Eastern Cape,12,Insurance and financial services,2195,21628591503.74425,0.09651958086179259
+Eastern Cape,13,"Personal care, social protection and miscellaneous goods",2212,7195381500.965178,0.03211005240418115
+Free State,1,Food and non-alcoholic beverages,1369,22971488980.80451,0.1875714668251146
+Free State,2,"Alcoholic beverages, tobacco and narcotics",612,2532705558.3797274,0.02068056176151141
+Free State,3,Clothing and footwear,1156,8214435843.294259,0.06707417971708422
+Free State,4,"Housing, water, electricity, gas and other fuels",1369,36887223820.21252,0.301199050912426
+Free State,5,"Furnishings, household equipment and maintenance",1220,6022223621.318938,0.049173883292613886
+Free State,6,Health,907,1390096483.516149,0.0113506981049178
+Free State,7,Transport,1275,15337458122.174847,0.12523652775617117
+Free State,8,Information and communication,1290,5765074618.062097,0.0470741580299717
+Free State,9,"Recreation, sport and culture",800,1450894536.4723046,0.011847138713649194
+Free State,10,Education services,265,2513347167.2110767,0.02052249269468199
+Free State,11,Restaurants and accommodation services,427,1959090804.032353,0.01599676608090174
+Free State,12,Insurance and financial services,1223,13176455499.360704,0.10759107028874788
+Free State,13,"Personal care, social protection and miscellaneous goods",1255,4247433407.981355,0.03468200582220841
+Gauteng,1,Food and non-alcoholic beverages,4688,147525676586.98325,0.13861065902943256
+Gauteng,2,"Alcoholic beverages, tobacco and narcotics",1578,16690903561.403625,0.01568226762938291
+Gauteng,3,Clothing and footwear,3711,55304363917.92906,0.05196230586577157
+Gauteng,4,"Housing, water, electricity, gas and other fuels",4688,340844910987.09625,0.3202475584709047
+Gauteng,5,"Furnishings, household equipment and maintenance",3965,47069283081.79288,0.0442248732488504
+Gauteng,6,Health,2608,11783602663.301516,0.01107151628576442
+Gauteng,7,Transport,4277,189494343913.57956,0.1780431481480069
+Gauteng,8,Information and communication,4416,50513775606.37084,0.04746121413471781
+Gauteng,9,"Recreation, sport and culture",2321,15205657478.208036,0.01428677537897971
+Gauteng,10,Education services,556,18143566030.40054,0.017047145302431666
+Gauteng,11,Restaurants and accommodation services,2513,37279669954.62055,0.03502684915844424
+Gauteng,12,Insurance and financial services,3974,103122803756.3374,0.09689106412063038
+Gauteng,13,"Personal care, social protection and miscellaneous goods",4071,31338412166.72087,0.029444623226682707
+KwaZulu-Natal,1,Food and non-alcoholic beverages,3216,86544640594.30489,0.2018542265441675
+KwaZulu-Natal,2,"Alcoholic beverages, tobacco and narcotics",794,5916681325.951992,0.013799897076895952
+KwaZulu-Natal,3,Clothing and footwear,2357,21785517065.09023,0.05081191240544512
+KwaZulu-Natal,4,"Housing, water, electricity, gas and other fuels",3216,144647988359.9355,0.3373728010314933
+KwaZulu-Natal,5,"Furnishings, household equipment and maintenance",2851,18854428641.382328,0.043975526204783545
+KwaZulu-Natal,6,Health,1949,4330176298.09949,0.010099578453969306
+KwaZulu-Natal,7,Transport,2933,56960228659.06428,0.1328523964141455
+KwaZulu-Natal,8,Information and communication,3020,17241084914.2588,0.04021260977284641
+KwaZulu-Natal,9,"Recreation, sport and culture",1863,4958096793.797763,0.011564122129002442
+KwaZulu-Natal,10,Education services,411,3875323916.8224263,0.009038693863265994
+KwaZulu-Natal,11,Restaurants and accommodation services,1533,13324702743.452417,0.031078152820794406
+KwaZulu-Natal,12,Insurance and financial services,2830,37460703911.22214,0.0873722666345836
+KwaZulu-Natal,13,"Personal care, social protection and miscellaneous goods",2820,12848648084.573124,0.02996781664860686
+Limpopo,1,Food and non-alcoholic beverages,2237,40929667434.05713,0.22225863727427891
+Limpopo,2,"Alcoholic beverages, tobacco and narcotics",491,2326880660.8696656,0.012635561371662515
+Limpopo,3,Clothing and footwear,1532,12750743773.656424,0.06923982316573293
+Limpopo,4,"Housing, water, electricity, gas and other fuels",2237,62166267178.33664,0.337578844239249
+Limpopo,5,"Furnishings, household equipment and maintenance",1868,7797736884.275074,0.04234371990719509
+Limpopo,6,Health,1233,1492217677.8706648,0.00810312637244039
+Limpopo,7,Transport,1811,20779257589.845936,0.11283672125924679
+Limpopo,8,Information and communication,2126,9491982773.951725,0.05154391151035844
+Limpopo,9,"Recreation, sport and culture",1192,1840121801.656284,0.009992335381511222
+Limpopo,10,Education services,125,1929887088.9561107,0.010479784014264892
+Limpopo,11,Restaurants and accommodation services,728,3409445122.0607114,0.018514165254617045
+Limpopo,12,Insurance and financial services,1848,13282941629.629177,0.07212979461295688
+Limpopo,13,"Personal care, social protection and miscellaneous goods",1959,5956177049.6954155,0.03234357563648584
+Mpumalanga,1,Food and non-alcoholic beverages,1580,34835304336.17478,0.18364719450645037
+Mpumalanga,2,"Alcoholic beverages, tobacco and narcotics",420,2392109252.2577095,0.01261088891001463
+Mpumalanga,3,Clothing and footwear,1339,12744808882.936932,0.06718897510654755
+Mpumalanga,4,"Housing, water, electricity, gas and other fuels",1580,57451159495.94662,0.3028750419618632
+Mpumalanga,5,"Furnishings, household equipment and maintenance",1384,7625649275.577559,0.04020143134778606
+Mpumalanga,6,Health,996,1740298553.647807,0.009174627667861736
+Mpumalanga,7,Transport,1400,35488282120.45692,0.18708960847250042
+Mpumalanga,8,Information and communication,1540,9667832673.490265,0.05096755665775948
+Mpumalanga,9,"Recreation, sport and culture",860,2109442571.175905,0.011120706925090333
+Mpumalanga,10,Education services,236,1945241304.483739,0.010255059199684727
+Mpumalanga,11,Restaurants and accommodation services,597,3854865368.067687,0.020322348936981996
+Mpumalanga,12,Insurance and financial services,1330,13540162295.918638,0.07138197487269397
+Mpumalanga,13,"Personal care, social protection and miscellaneous goods",1356,6290858022.133018,0.03316458543476551
+North West,1,Food and non-alcoholic beverages,1382,33202542362.36265,0.21361636879589269
+North West,2,"Alcoholic beverages, tobacco and narcotics",479,3018486206.8627086,0.019420141257056937
+North West,3,Clothing and footwear,835,6650371382.572479,0.04278672911203428
+North West,4,"Housing, water, electricity, gas and other fuels",1382,49239677063.794624,0.3167950484109174
+North West,5,"Furnishings, household equipment and maintenance",1144,5962706263.200331,0.038362473759998655
+North West,6,Health,699,1008245387.9605143,0.006486783942047657
+North West,7,Transport,1230,24169006377.77394,0.15549698946178697
+North West,8,Information and communication,1291,6926342297.26872,0.04456225292726832
+North West,9,"Recreation, sport and culture",549,1439646027.1369934,0.00926230146210268
+North West,10,Education services,98,788698538.1730461,0.005074277624900713
+North West,11,Restaurants and accommodation services,445,3870374026.1309657,0.02490096199022526
+North West,12,Insurance and financial services,1110,14678327861.738878,0.09443647608667997
+North West,13,"Personal care, social protection and miscellaneous goods",1175,4476279149.362621,0.028799195169088493
+Northern Cape,1,Food and non-alcoholic beverages,886,10359051866.773079,0.19782829294550283
+Northern Cape,2,"Alcoholic beverages, tobacco and narcotics",356,1188138162.0259778,0.022690044166196983
+Northern Cape,3,Clothing and footwear,741,3357514933.2249117,0.06411894218904272
+Northern Cape,4,"Housing, water, electricity, gas and other fuels",886,14441467707.383322,0.27579077129084806
+Northern Cape,5,"Furnishings, household equipment and maintenance",741,2531037051.723605,0.04833557605115788
+Northern Cape,6,Health,366,307765779.881637,0.005877447052496676
+Northern Cape,7,Transport,743,8757664644.506392,0.1672463724570166
+Northern Cape,8,Information and communication,780,2564666378.016205,0.048977800098197494
+Northern Cape,9,"Recreation, sport and culture",463,537454011.4238491,0.010263836013576543
+Northern Cape,10,Education services,60,216478213.54553267,0.0041341153607859305
+Northern Cape,11,Restaurants and accommodation services,256,671794463.547796,0.012829354813849352
+Northern Cape,12,Insurance and financial services,787,5973412011.632422,0.11407510228921323
+Northern Cape,13,"Personal care, social protection and miscellaneous goods",737,1457408866.8257735,0.027832345272115644
+Western Cape,1,Food and non-alcoholic beverages,1830,75165256539.76251,0.14078195336745433
+Western Cape,2,"Alcoholic beverages, tobacco and narcotics",587,5555372091.54917,0.01040502182437976
+Western Cape,3,Clothing and footwear,1338,20392860960.181477,0.03819513074110928
+Western Cape,4,"Housing, water, electricity, gas and other fuels",1830,183321707275.9296,0.343355284516449
+Western Cape,5,"Furnishings, household equipment and maintenance",1564,20705215555.655273,0.03878016020975534
+Western Cape,6,Health,1016,7645955243.924152,0.014320612529677848
+Western Cape,7,Transport,1642,82014152697.4747,0.1536097015037693
+Western Cape,8,Information and communication,1737,26404666418.616226,0.04945503664265897
+Western Cape,9,"Recreation, sport and culture",977,8899686753.187784,0.01666880874422932
+Western Cape,10,Education services,310,10613353628.199043,0.019878448159982038
+Western Cape,11,Restaurants and accommodation services,788,14341398511.992165,0.026860948654799054
+Western Cape,12,Insurance and financial services,1698,62900927302.96573,0.1178112843884366
+Western Cape,13,"Personal care, social protection and miscellaneous goods",1566,15952031281.799265,0.029877608717299168

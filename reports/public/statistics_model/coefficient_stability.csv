@@ -1,0 +1,23 @@
+split,term,coefficient
+deterministic_half_1,intercept,11.476792109252317
+deterministic_half_1,log_income_centered,0.5659175987059215
+deterministic_half_1,log_household_size_centered,0.05939046685455366
+deterministic_half_1,province_Eastern Cape,-0.13884404072242257
+deterministic_half_1,province_Free State,-0.18559176141915154
+deterministic_half_1,province_Gauteng,-0.0701920827659577
+deterministic_half_1,province_KwaZulu-Natal,-0.15381954049487798
+deterministic_half_1,province_Limpopo,-0.191796178670965
+deterministic_half_1,province_Mpumalanga,-0.2217852206769546
+deterministic_half_1,province_North West,-0.27762467692546994
+deterministic_half_1,province_Northern Cape,-0.13794526802161303
+deterministic_half_2,intercept,11.492882692627079
+deterministic_half_2,log_income_centered,0.5479395237225253
+deterministic_half_2,log_household_size_centered,0.07007001598701892
+deterministic_half_2,province_Eastern Cape,-0.18338344821608313
+deterministic_half_2,province_Free State,-0.232915013357118
+deterministic_half_2,province_Gauteng,-0.06292336391405914
+deterministic_half_2,province_KwaZulu-Natal,-0.1829989122609169
+deterministic_half_2,province_Limpopo,-0.19551515960717947
+deterministic_half_2,province_Mpumalanga,-0.19835111053082471
+deterministic_half_2,province_North West,-0.35728370071202664
+deterministic_half_2,province_Northern Cape,-0.2585878102410235

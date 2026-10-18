@@ -273,3 +273,23 @@ Validate additional statement months and layout variants with manual stratified 
 **Limitations:** Personal coverage remains one account over 235 observed days, includes four uncovered dates and has 205 classifications still needing review. Survey point estimates lack design-based variance estimates. Geographic and income results are descriptive. No seasonality, causal inference, prediction, anomaly detection, forecasting or dashboard is implemented.
 
 **Outcome:** Checkpoint 6 is complete and ready for the mandatory review stop. No commit, push or Checkpoint 7 work is part of this outcome.
+
+## Checkpoint 7: Statistical analysis and evidence-based modelling
+
+**Objective:** Extend the validated EDA into coverage-aware personal statistics, weighted household distributions and one interpretable explanatory model without inventing survey inference, causal effects or forecasting capability.
+
+**Research design:** SRQ1-SRQ4 separate purchase-transaction variability, covered-day variability, resolved-category concentration, merchant-identified concentration, robust unusual-observation screening and recurring-payment evidence. SRQ5-SRQ8 analyse household consumption inequality, household-size distributions, income associations, provinces and expenditure composition. SRQ9 uses a parsimonious weighted log-linear model to explain household expenditure variation.
+
+**Personal implementation:** The real curated file was revalidated. Daily statistics include all 235 covered dates and exclude only the four documented gap dates. Category outputs repeat the excluded unresolved count and rand amount and the eligible-value coverage. Unusual observations use IQR and MAD rules, with category thresholds only at n >= 20; records are never removed or relabelled. Recurrence uses explicit amount and interval rules. All detail remains in ignored private outputs.
+
+**Survey foundation:** Ordinary-consumption items are aggregated to 19,940 households before one `HHOLD_WGT` is applied. Weighted quantiles, variance, Gini, Lorenz and top shares were implemented and tested. The official methodology describes strata, PSUs and variance units, but the released analytical files expose only final weights. No confidence intervals, p-values, significance claims or ordinary-regression standard errors are reported.
+
+**Weight discrepancy:** The released v1.2 household weights sum to 21,282,823.756, compared with 19,050,732.016 printed in the supplied metadata. The released record-level weights reconcile to the released preweighted expenditure fields and produce an approximately R2.955 trillion total consistent with the official release scale. They are used without undocumented normalisation, and the discrepancy is retained as a limitation.
+
+**Model decision:** A weighted log-linear model uses positive annual ordinary consumption as outcome and centered log income, centered log household size and province indicators as predictors. Published expenditure is excluded as leakage, income quintile as a derivative of income, PersonIncome as the wrong unit, and settlement type because its local code frequencies conflict with the metadata label ordering. Prediction is not the objective, so no cosmetic train-test split was introduced. Weighted residual metrics, condition number, aggregate calibration and deterministic half-sample coefficient stability provide diagnostics without implying design-corrected inference.
+
+**Real results:** Weighted median consumption is R81,558, weighted Gini 0.506 and the top 10% expenditure share 39.2%. Weighted log-Pearson and Spearman income-expenditure associations are 0.741 and 0.707. The model uses all 19,940 households and has weighted R-squared 0.559, log RMSE 0.596 and log MAE 0.457. Income and size coefficients remain positive in both deterministic halves.
+
+**Reproducibility and privacy:** Added reusable modules under `src/analysis/statistics/`, three output-free notebooks, synthetic tests, private and public CLI tracks, aggregate public tables and charts, and focused methodology/findings documentation. Each report destination is staged before atomic replacement. Private merchants, amounts, outlier rows and recurrence details remain ignored.
+
+**Outcome:** Checkpoint 7 is implemented and awaits final test, visual, privacy and Git review. No commit or push is authorised at this stage.

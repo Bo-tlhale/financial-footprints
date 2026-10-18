@@ -1,0 +1,29 @@
+{
+  "diagnostics": {
+    "condition_number": 11.763697765201185,
+    "sample_households": 19940,
+    "weighted_mae_log_rand": 0.4574790644451964,
+    "weighted_mean_residual": 5.212083968476558e-14,
+    "weighted_r_squared": 0.5591678061873386,
+    "weighted_rmse_log_rand": 0.5956497946814729
+  },
+  "metadata": {
+    "excluded_predictors": {
+      "PersonIncome": "individual rather than household unit",
+      "income quintile": "derived from income and redundant",
+      "published expenditure": "outcome leakage",
+      "settlement type": "local code frequencies conflict with metadata label ordering"
+    },
+    "inference": "exploratory coefficients only; no standard errors, confidence intervals, or p-values",
+    "objective": "explain variation in annual ordinary household consumption",
+    "outcome": "natural log of positive annual ordinary household consumption",
+    "prediction": "not an objective; no train-test split or forecasting claim",
+    "predictors": [
+      "centered log household income",
+      "centered log household size",
+      "province indicators"
+    ],
+    "reference_province": "Western Cape",
+    "weights": "HHOLD_WGT normalised to mean one"
+  }
+}

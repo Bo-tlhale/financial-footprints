@@ -2,7 +2,7 @@
 
 Financial Footprints is a privacy-conscious Python data project that turns supported bank statements into validated transactions and studies those records separately from South African household expenditure microdata.
 
-The project now includes extraction, preprocessing, categorisation, manual-review support, Stats SA IES 2022/23 integration, and reproducible exploratory data analysis.
+The project now includes extraction, preprocessing, categorisation, manual-review support, Stats SA IES 2022/23 integration, exploratory analysis, and reproducible statistical analysis with an interpretable household model.
 
 ## Current status
 
@@ -13,11 +13,11 @@ The project now includes extraction, preprocessing, categorisation, manual-revie
 | 3. Merchant and category rules | Complete |
 | 4. Manual review and curated data | Complete; local decisions remain private |
 | 5. Stats SA IES integration | Complete against all five official Stata files |
-| 6. Exploratory data analysis | Complete and ready for review |
-| 7. Statistical modelling | Not started |
+| 6. Exploratory data analysis | Complete |
+| 7. Statistical analysis and modelling | Complete and ready for review |
 | 8. Dashboard and final presentation | Not started |
 
-Checkpoint 6 has two independent tracks:
+Checkpoints 6 and 7 retain two independent tracks:
 
 - Personal account behaviour: movement composition, resolved spending categories, time patterns, merchant concentration, and recurring-payment candidates.
 - Household expenditure: weighted and unweighted consumption distributions, COICOP shares, household composition, single-person households, provinces, and published household income quintiles.
@@ -116,6 +116,22 @@ The notebooks are concise, output-free entry points:
 
 Substantial calculations live in `src/analysis/`, not in notebook cells.
 
+### 6. Run statistical analysis
+
+```powershell
+python -m src.analysis.statistics.pipeline --track personal
+python -m src.analysis.statistics.pipeline --track public
+python -m src.analysis.statistics.pipeline --track modelling
+```
+
+The personal command writes only to ignored `reports/private/statistics/`. The public commands generate aggregate CSV, JSON and PNG outputs under `reports/public/statistics/` and `reports/public/statistics_model/`. The model is an exploratory weighted log-linear association model; it is not a forecast and reports no p-values or confidence intervals.
+
+Checkpoint 7 notebooks are output-free entry points:
+
+- `notebooks/03_personal_statistical_analysis.ipynb`
+- `notebooks/04_household_statistical_analysis.ipynb`
+- `notebooks/05_household_modelling.ipynb`
+
 ## Verified EDA coverage
 
 The private track processed 595 transactions from eight reconciled statement periods spanning 31 January to 26 September 2026. The statements cover 235 days and leave four uncovered dates: 27 April and 24–26 May. Two hundred and five rows still require classification review. Category findings exclude 185 unresolved purchases worth R25,205.84 and cover R15,598.44, or 38.23% of the R40,804.28 eligible expenditure. No personal transaction descriptions, merchant rankings, or account balances are published.
@@ -149,3 +165,5 @@ Tests use synthetic fixtures for private financial records and survey relationsh
 - [Personal-versus-household comparison methodology](docs/COMPARISON_METHODOLOGY.md)
 - [EDA methodology](docs/EDA_METHODOLOGY.md)
 - [Publishable EDA findings](docs/EDA_FINDINGS.md)
+- [Statistical methodology](docs/STATISTICAL_METHODOLOGY.md)
+- [Statistical findings](docs/STATISTICAL_FINDINGS.md)
